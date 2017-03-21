@@ -1,0 +1,29 @@
+\section{Implementation}
+
+We implement MURS in Spark 1.6.0 with approximately 1000 Scala codes. MURS contains a scheduler and a sampler. The scheduler implements the Algorithm~\ref{code:scheduler}. The sampler runs seasonally to update the metrics related to the current running tasks, Spark memory manger and JVM heap manager. Each executor launches one scheduler and one sampler in Spark.
+
+The sampler works seasonally to collect and compute all metrics in the scheduler. It is implemented in the original task scheduler because all tasks in Spark are accessible in the scheduler. The sampler updates the following metrics in a task after a record is processed:
+
+\begin{enumerate}
+
+\item Read phase. Only the shuffle buffer in the shuffle read phase results in memory pressure. Thus the sampler updates the metrics in shuffle reader. The updated metrics include the number of processed records, the number of total records, the size of total records and the size of the shuffle buffer.
+
+\item Process phase. During the process phase, only the operation of caching data produces the memory pressure. Thus the sampler updates the metrics in {\ttfamily \small CacheManager}. {\ttfamily \small CacheManager} is invoked by the function APIs to unroll the intermediate data in memory. The updated metric is the size of cached data objects unrolled by this task.
+
+\item Write phase. Since only the shuffle buffer in the write phase causes memory pressure, the sampler updates metrics in the shuffle writer. The updated metrics are the size of the shuffle buffer, the number of write records, and the number of total records. 
+
+\end{enumerate}
+
+The sampler also updates some metrics of the memory mangers, including the current memory usage of a task, free memory space, and the current proportion of used heap. Based on these metrics, current memory usage rate of a task is computed as the quotient of two increments: $\bigtriangleup size_{used\_memory} / \bigtriangleup size_{processed\_records}$. All computed values of the memory usage rate are stored in a buffer. The changing trend of the memory usage rate determines the model that the task belongs to.
+
+%The sampler works as a manager to collect and compute all data from current running tasks. The sampler is realized as a field of \textit{TaskScheduler} in Spark. There are two types of tasks in Spark: \textit{ShuffleMapTask} and \textit{ResultTask}. \textit{ShuffleMapTask} will write shuffle data to disk, which will result in heavy memory pressure. \textit{ResultTask} will return the data to driver with light memory pressure. Both of them implement the \textit{TaskMemoryManager} in Spark to update the real-time memory usage. These tasks share the only task scheduler, thus the sampler can collect data from all the running tasks. As these tasks process data as iterator, sampler updates the used memory size of one task from \textit{TaskMemoryManager} and the number of processed records each time. The size of processed data can be computed by the processed records, total size, and total records. And the memory usage rate means the quotients of increased used memory size and processed data size.
+
+%{\ttfamily \small CacheManager} manages the caching data in Spark. When tasks need cache data, they invoke {\ttfamily \small CacheManager} to roll the data that result in memory pressure. If the input of a task is from {\ttfamily \small CacheManager} or disk, the task has no read phase. After reading one record, the record can be transmitted to next function API quickly.
+
+%\textit{CacheManager} manages the caching data in Spark. When tasks need cache data, they invoke cache manager to roll the data that result in memory pressure. Reading from cache manager is different from reading from disk. As the data has already been stored in memory, we cannot consider the memory pressure of reader. Thus, the caching data in tasks will be computed in the memory usage rate during writing but not reading.
+
+The scheduler detects the total memory usage from the sampler seasonally. When it reaches the yellow value in Algorithm~\ref{code:scheduler}, scheduler proposes the suspended tasks. All tasks process data in {\ttfamily \small InterruptibleIterator}, which can be interrupted by the system or scheduler. We build a flag to suspend the {\ttfamily \small InterruptibleIterator}. After MURS proposes suspended tasks, we update the flag of each task in task scheduler. If the flag is true, the {\ttfamily \small InterruptibleIterator} will suspend itself and the task is also suspended. When MURS resumes the task, it only needs to set the flag of this task to be false.
+
+%The scheduler detects the total memory usage in JVM seasonally. When it reaches the yellow value in Algorithm~\ref{code:scheduler}, it proposes the stopping tasks. The proposal will be used to update the flag of each task in task scheduler. Both \textit{ShuffleMapTask} and \textit{ResultTask} process data in \textit{InterruptibleIterator}. We put the flag in this iterator. The flag is updated by the task scheduler each time the scheduler gives new proposals. When the flag is true, the \textit{InterruptibleIterator} will stop itself and the task also stops working.
+
+When we consider the Spark as a server, we choose Spark Job Server 0.6.2~\cite{www:jobserver}. Each job in Spark works within the only {\ttfamily \small SparkContext}. Spark Job Server first defines the shared context. We set the scheduler mode as FAIR and build a scheduler pool in the context. The scheduler mode means the processing sequences when jobs come from multi-tenant. Fair scheduler will process tasks from each job fairly. All jobs are submitted to Spark Job Server instead of Spark. Spark Job Server will resubmit the job to the shared context in Spark. Thus, all jobs are processed in one context in Spark.

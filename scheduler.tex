@@ -1,0 +1,124 @@
+\section{Design of MURS}
+\label{sec:desgin}
+
+Memory pressure essentially describes the usage of heap in managed languages. We first compute the heavy tasks which may have linear or super-linear model, or have large input dataset. The fundamental scheduling mechanism is suspending these heavy tasks as memory pressure occurs, and then resuming the suspended task when memory pressure recedes or light task completes.
+
+%\subsection{Memory management}
+
+%// 这一段的目的不够明确
+
+%Although the memory usage rate describes the memory usage features about different tasks, we should also separate the memory management of the data processing system itself and JVM. Because the data processing systems always take some measures to avoid the out of memory error by spilling data to disk which based on the memory management themselves. When the spill occurs, the memory may suffer pressures although we stop tasks.
+
+%Most data processing systems split the allocated memory to cache memory and execution memory. The cache memory is only used to store data with long lifetime. While execution memory is only used for temporary or middle data, such as shuffle result that will be write to disk. Cache memory and execution memory can be managed uniformly. What's more, these execution memory are allocated to each task independently. These make up the memory management of data processing system and also decide the memory usage rate of one task based the function API. When considering about the memory pressure, it's conflict to consider the memory management of data processing system. Because after one task is completed, the allocated execution memory will be reclaimed but the data objects are also in JVM heap. On another hand, some tasks will not only use the execution memory but also cache memory. Thus, in order to measure the memory pressure, we just consider the usage of JVM heap but not the memory management of data processing system.
+
+%In the memory management of JVM, the heap space is split to young generation, old generation and other generations. The pinch of young generation leads to \textit{Minor GC}. Minor GC will move the lived data objects from young generation to old generation. The pinch of old generation leads to Full GC. If most long lifetime data objects remain in the old generation, frequent full gc will occur and lead to bad performance. Some garbage collection algorithms are working only in young generation or old generation, and some can works on both generations. In any case, the garbage collection is triggered when the used space of heap get the threshold.
+
+Firstly, we define the memory pressure as follows: when the proportion of used heap has reached the threshold value. The threshold is set according to the trigger of garbage collection. In addition, we set two thresholds here. The first threshold, called as yellow value, is used to indicate the memory pressure. When the percentage of long lived data objects in the heap meets the yellow value, it means frequent full GC will occur. Full GC means that the garbage collector will clean all the heap, and it is usually expensive. Another threshold value, called as red value, is used to avoid spilling. The red value shows the pressure under which the out-of-memory error will occur or some data will be spilled to disk. The default values of yellow and red are 0.4 and 0.8, based on our evaluation. It is proposed that, if the memory pressure is heavy, we should reduce the value.
+
+With the yellow and red value, an accurate percentage of long lived data objects in the heap actually determines the efficiency of threshold. As JVM splits the heap to young generation and old generation, minor GC cleans the young generation and moves alive data objects to the old generation. Thus the percentage of heap usage after a minor GC describes the lived data objects in the heap. After each full GC, dead data objects in old generation will also be reclaimed, we revise the percentage of long lived data objects in the heap according to the current percentage of heap usage.
+
+%With the yellow value and red value, the percentage of data objects with long lifetime in the heap are actually important. As we know, garbage collection algorithm is based on mark-clean; thus, long-lived data objects in the heap will lead to expensive marking and cleaning costs. What’s more, long-lived data objects directly result in frequent full garbage collection. In order to get the percent of long lifetime data objects in heap, we set it to the size after a minor GC, which just cleans parts of the heap quickly. These data objects are lived in the heap, and most will also be lived along with the tasks.  
+
+%Although the scheduler wishes to reclaim as many data objects as possible, the space reclaimed the last time will have an error with the expected reclaimed space. The error actually means the space occupied by these data objects was stored in an old generation and reclaimed before the task completed. We count the error and consider it in the last computation. Because tasks themselves work with the iterator, the produced data objects have steady regulars.
+
+\IncMargin{0.4em}
+\SetAlFnt{\small}
+\begin{algorithm}[!t]
+%\DontPrintSemicolon
+
+\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+\SetKwProg{Fn}{Function}{}{end}
+\SetKwFunction{CST}{ComputeSuspendTasks}
+\SetKwFunction{CS}{ComputeSpill}
+\SetKwData{F}{\small{final}}
+
+\Input{Array of running tasks $R$\;}
+\Output{Array of suspended tasks $S$\;}
+get the Memory Usage Sampler $Sampler$\;
+get the Memory Manger $SM$ of System\;
+get the Memory Manger $JM$ of JVM\;
+get the queue including suspended tasks $SQ$\;
+\lIf{Usage of $JM$ is lower than the yellow value}{return}
+\lElseIf{Usage of $JM$ is lower than the red value}{\CS}
+\lElseIf{$SQ$ is not empty}{return}
+\lElse{\CST}
+
+\BlankLine
+\Fn{\CST}{
+  $freeMemory \leftarrow JM.freeMemory$\;
+  $consumption[] \leftarrow SM.tasksMemoryConsumption$\;
+  $rate[] \leftarrow Sampler.getMemoryUsageRate$\;
+  $percent[] \leftarrow Sampler.getCompletePercent$\;
+  $S \leftarrow R$\;
+  \While{$freeMemory > 0$}{
+    $minRateTaskId \leftarrow reate[].min$\;   
+    \lIf{\CS}{reduce the running cores and return}
+    $memoryNecessary \leftarrow comsumption[taskId] * (1-percent[taskId])$\;
+    $freeMemory -= memoryNecessary$ \;
+    $S$ remove minRateTaskId \;
+    push minRateTaskId to $SQ$\;
+    $rate[]$ remove minRateTaskId \;
+  }
+  \KwRet{$S$}
+}
+\BlankLine
+\Fn{\CS}{
+  $taskId \leftarrow$ task Id \;
+  $totalMemory \leftarrow JM.totalMemory$ \;
+  \lIf{$comsumption[taskId] > totalMemory / R.length$}{\KwRet{True}}
+  \Else{
+      $memoryNecessary \leftarrow comsumption[taskId] / percent[taskId]$\;
+      \lIf{$memoryNecessary > totalMemory / R.length$}{\KwRet{True}}
+      \lElse{\KwRet{False}}
+      }
+}
+\caption{Scheduling mechanism on JVM}
+%\vspace{-4mm}  
+\label{code:scheduler}
+\end{algorithm}
+
+These indicators of memory pressure are the infrastructure of the memory usage rate based scheduler. The scheduler is designed in Algorithm~\ref{code:scheduler}. The input is the current running tasks and the output is the proposed suspended tasks. Some basic managers should be accessible to record the indicators of memory pressure. We design a \textit{Sampler} to record the real-time metrics of current running tasks. Sampler runs seasonally to update the metrics of each task and compute the current memory usage rate, such as the size of input dataset, the number of processed records, and the size of result data.
+
+If the memory pressure is light, or the system already has suspended tasks, we directly return without propose (lines 4, 6). If the memory pressure has reached the red value, MURS will avoid spilling (line 5). When the memory usage of JVM heap touches the yellow value, we get the memory usage rates of all running tasks from the sampler and other details of current memory (lines 9-12). We take the measures to process current running tasks step by step in the following order: constant, sub-linear, linear, and super-linear. Free memory subtracts the necessary memory of the currently processing task every time. When free memory is not enough for the remaining unprocessed tasks, scheduler will stop processing tasks (lines 14-20). This method is able to distinguish these tasks with sub-linear model but working as heavy tasks if they process larger dataset, or tasks with super-linear model but working as light tasks if they consume less memory space. Processed tasks are removed and the remained tasks will be returned. The returned tasks are heavy tasks and will be set to suspend. In order to avoid potential starvation, suspended tasks are pushed to a queue (line 21). FIFO algorithm allows us to resume the first suspended task to avoid starvation. 
+
+MURS suspends the proposed heavy tasks to prevent memory pressure increasing at a high rate of speed. Note that if all running tasks are heavy tasks, MURS still schedule tasks with the same algorithm. It always chooses these tasks have relatively small memory usage rate in total tasks. 
+
+Function \textit{ComputeSpill} is designed to avoid spilling. As the running tasks share the JVM heap together, the maximally allocated space for each task is ensured to less than $1/N$ while $N$ is the number of running threads. When the consumption exceeds the maximal space, the spill or out-of-memory error will occur. Running tasks that satisfy the \textit{ComputeSpill} (lines 27, 30) are also suspended to decrease the parallelism in order to acquire enough memory space after memory pressure goes away.   
+
+When a running task completes, we resume a suspended task popped from the queue accordingly. After the memory pressure recedes, meaning the usage of JVM heap is below the yellow value after a full GC, the remaining suspended tasks will also be removed. However, one completed task only resumes one suspended task and the memory usage below yellow value will remove all suspended tasks.
+
+\begin{comment}
+\subsection{Multi-launch with MURS}
+
+When light tasks have a large proportion in the running tasks, or memory space is enough for total running tasks, the memory pressure is light. Light memory pressure usually means that memory space will suffer less allocation and reclamation. However, properly increase the frequency of memory allocation and reclamation can improve the efficiency of memory usage. With hyper-threading technology, we can increase the parallelism of submitted jobs as well as memory pressure. Fortunately, MURS releases our scruple that memory pressure increases seriously with high parallelism. Thus, we propose multi-launch to improve the efficiency of memory usage with MURS.
+
+Multi-launch works when tasks are launched to workers. Multiple tasks are launched to workers compared to the original configuration. If the configuration has remained free CPUs in the workers, multi-launch will work better because an extra task can execute more quickly on a physical CPU than on a logic CPU. The multiple should not be too large, because 1) maximally accessible memory space in heap is limited; 2) the interprocessor communication time can not be ignored; 3) I/O parallelism is limited by disk.
+
+\end{comment}
+
+
+
+
+
+
+
+
+\begin{comment}
+\subsection{Balance of the Stop}
+
+When the heavy tasks are suspended, they will suffer from a long wait. A long wait will result in two problems: 1) CPU resource is waste during suspending tasks; and 2) stopped tasks can be stragglers. 
+
+Although the tasks with linear memory usage model will lead to more memory pressure, frequent stopping is not tolerated in these tasks. And it is a little regretful to waste CPUs when some tasks are suspended. Multi-launch is designed to enhance the fairness:
+
+\begin{enumerate}
+
+\item When tasks are allocated to workers, multiple tasks will be launched. This will result in memory pressure at express speed.
+
+\item After the mitigation of MURS, tasks with a constant or sub-linear memory usage rate will complete and memory pressure will recede. Thus, the tasks with a linear memory usage model will run smoothly with light memory pressure and more resources (both core and memory).
+
+\end{enumerate}
+
+However, multi-launch is not always advised. When the space of execution memory is much smaller or spill is accessed, multi-launch will affect the memory pressure to a great extent. Although our scheduler can prevent the increasing speed of memory pressure, much higher parallelism will decrease the available heap space of one task. Less max available space of one task will result in out of memory error.
+
+As we know, stragglers are common in current distributed data processing systems. Many reasons, such as the heterogeneous environment~\cite{matei:heter}, can lead to one task taking much more time than other tasks and affects the completion of a job. Our scheduler even stops some tasks to prevent the execution. In fact, if the heterogeneous environment is gotten rid of, the cost of computation itself is much more stable. However, garbage collections can prominently increase the execution time of tasks, especially in current in-memory data processing systems, as shown in Figure~\ref{fig:memorypressure}. Our scheduler can control heavy memory pressure, based on the memory usage rate. With low memory pressure, these tasks can be free from the stop-the-world of garbage collection by waiting for constant or sub-linear tasks, and fortunately, the constant or sub-linear tasks can execute quickly with less memory pressure. Thus, we take some time to wait, but free more pressures of garbage collection. 
+\end{comment}
