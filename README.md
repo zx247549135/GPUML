@@ -1,3 +1,3 @@
-# My Paper
+# Paper for GPU&ML
 
-This paper is for me.
+This paper is for somebody.

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-pdflatex murs-2016.tex
-bibtex murs-2016.aux
-pdflatex murs-2016.tex
-pdflatex murs-2016.tex
+pdflatex gpuml-2016.tex
+bibtex gpuml-2016.aux
+pdflatex gpuml-2016.tex
+pdflatex gpuml-2016.tex
 
 rm -f *.aux *.bbl *.blg *.log *.out
-evince murs-2016.pdf
+evince gpuml-2016.pdf

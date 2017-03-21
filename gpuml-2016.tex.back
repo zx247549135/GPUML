@@ -120,74 +120,7 @@
 % The documentation is contained in the cite.sty file itself.
 
 
-\usepackage[ruled,linesnumbered,lined]{algorithm2e}
 
-\usepackage{amsmath}
-\usepackage{enumitem}
-
-\usepackage{graphicx}
-\usepackage{subfigure}
-\graphicspath{{figure/}}
-
-\usepackage[breaklinks=true]{hyperref}
-%\usepackage{breakurl}
-\usepackage{multirow}
-\usepackage{balance}
-\usepackage{comment}
-\usepackage{tikz}
-\usepackage[numbers,sort&compress]{natbib}
-
-\usepackage{listings}
-% "define" Scala
-\lstdefinelanguage{scala}{
-morekeywords={abstract,case,catch,class,def,%
-do,else,extends,false,final,finally,%
-for,if,implicit,import,match,mixin,%
-new,null,object,override,package,%
-private,protected,requires,return,sealed,%
-super,this,throw,trait,true,try,%
-type,val,var,while,with,yield},
-otherkeywords={=>,<-,<\%,<:,>:,\#,@},
-keywords=[3]{StaticFixed,RuntimeFixed,Variable,RecurDef,D,ITERATIONS},
-sensitive=true,
-morecomment=[l]{//},
-morecomment=[n]{},
-morestring=[b]",
-morestring=[b]',
-morestring=[b]"""
-}
-
-\usepackage{color}
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-% Default settings for code listings
-\lstset{frame=tb,
-language=scala,
-xleftmargin=3.5em,
-%xrightmargin=1em,
-aboveskip=1mm,
-belowskip=0mm,
-showstringspaces=false,
-columns=flexible,
-basicstyle={\linespread{0.8}\fontsize{7}{8}\ttfamily},
-numbers=left,
-numberstyle=\fontsize{8}{10}\color{gray},
-keywordstyle=\color{blue},
-keywordstyle=[3]\color{magenta},
-commentstyle=\color{dkgreen},
-stringstyle=\color{mauve},
-frame=none,
-breaklines=true,
-breakatwhitespace=true,
-tabsize=3
-}
-
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
-
-\def\sharedaffiliation{
-\end{tabular}
-\begin{tabular}{c}}
 
 
 
@@ -278,6 +211,8 @@ tabsize=3
 % http://www.ctan.org/tex-archive/macros/latex/contrib/algorithmicx/
 
 
+
+
 % *** ALIGNMENT PACKAGES ***
 %
 %\usepackage{array}
@@ -305,16 +240,38 @@ tabsize=3
 % generate multiline equations as well as matrices, tables, etc., of high
 % quality.
 
+\usepackage[ruled,linesnumbered,lined]{algorithm2e}
 
+%\usepackage{amsmath}
+%\usepackage{enumitem}
 %\usepackage{eqparbox}
 % Also of notable interest is Scott Pakin's eqparbox package for creating
 % (automatically sized) equal width boxes - aka "natural width parboxes".
 % Available at:
 % http://www.ctan.org/tex-archive/macros/latex/contrib/eqparbox/
 
+\usepackage{graphicx}
+\usepackage{subfigure}
+\graphicspath{{figure/}}
 
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{balance}
+\usepackage{comment}
+\usepackage{tikz}
+\usepackage[numbers,sort&compress]{natbib}
 
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+% Default settings for code listings
 
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+\def\sharedaffiliation{
+\end{tabular}
+\begin{tabular}{c}}
 
 % *** SUBFIGURE PACKAGES ***
 %\usepackage[tight,footnotesize]{subfigure}
@@ -326,8 +283,6 @@ tabsize=3
 % be obtained at:
 % http://www.ctan.org/tex-archive/obsolete/macros/latex/contrib/subfigure/
 % subfigure.sty has been superceeded by subfig.sty.
-
-
 
 %\usepackage[caption=false]{caption}
 %\usepackage[font=footnotesize]{subfig}
@@ -417,24 +372,20 @@ tabsize=3
 %
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
-\title{Memory Usage Rate Based Scheduler for Distributed Data Processing System}
+\title{MURS: Mitigating Memory Pressure in Data Processing Systems for Service}
 
 
 % author names and affiliations
 % use a multiple column layout for up to two different
 % affiliations
 
-\author{\IEEEauthorblockN{Authors Name/s per 1st Affiliation (Author)}
-\IEEEauthorblockA{line 1 (of Affiliation): dept. name of organization\\
-line 2: name of organization, acronyms acceptable\\
-line 3: City, Country\\
-line 4: Email: name@xyz.com}
-\and
-\IEEEauthorblockN{Authors Name/s per 2nd Affiliation (Author)}
-\IEEEauthorblockA{line 1 (of Affiliation): dept. name of organization\\
-line 2: name of organization, acronyms acceptable\\
-line 3: City, Country\\
-line 4: Email: name@xyz.com}
+\author{\IEEEauthorblockN{Xiong Zhang, Xuanhua Shi, Hai Jin, Song Wu, Zhixiang Ke}
+\IEEEauthorblockA{Services Computing Technology and System Lab\\
+Cluster and Grid Computing Lab\\
+Big Data Technology and System Lab\\
+School of Computer Science and Technology\\
+Huazhong University of Science and Technology, Wuhan, 430074, China\\
+Email: \{wxzhang, xhshi, hjin, wusong, zhxke\}@hust.edu.cn}
 }
 
 % conference papers do not typically use \thanks and this command
@@ -473,12 +424,14 @@ line 4: Email: name@xyz.com}
 
 
 \begin{abstract}
-Test abstract. While most batch processing systems split job to tasks and launch tasks to workers by waves, thus the running tasks in one worker are doing the same operations at the same time. Single talent systems can use the same task features in one wave to deal with the memory pressure. Optimizing memory management is a wise solution to relieve the memory pressure. For example, region based memory management splits the memory to different region based on the data features, such as data form and lifetime. Region-based memory management dispose memory pressure fundamentally but some forward messages of the input data or user program are necessary. Task scheduler is another solution to avoid memory pressure. For example, interruptible tasks take full advantage of the all in-memory data objects of tasks to release memory pressure. Interruptible tasks consider all data objects it processes and relieve the memory pressure by two ways: release some never used data later and hang up the current task. However, tasks in multi-talent service are more sensitive in normal data processing system. Data processing systems that provide multi-talent service must launch tasks from different jobs or talents to ensure the fair scheduler. Thus the running tasks in one worker at the same time are processing different program and different data classes. The region based memory management and task scheduler will be lack of the non-uniform process. At this point, a uniform criterion for all these non-uniform tasks is most helpful to design new optimizations.
+%In-memory computing systems are shown to suffer serious memory pressure as well as they are for service, the memory pressure will effect all submitted jobs. Memory pressure is coming from the running tasks as they produce massive long-lived data objects in limited memory, which brings significant memory and CPU overheads. Some tasks result in heavy memory pressure because of the operations and dataset they process, which affects all running tasks in the system. We find that each task includes several function APIs provided by the framework, and most function APIs produce long-lived data objects in memory within their own regular models; some need constant memory space while some need linear memory space. As different models have different impact on memory pressure, we propose memory usage rate to classify which model a task belongs to. Based on the memory usage rate, we design a scheduler called MURS to schedule all running tasks and mitigate heavy memory pressure. We implement MURS in Spark and the experimental study shows that, when compare to Spark, our scheduler can 1) decrease the execution time of submitted job by up to 65.8\%; 2) mitigate the memory pressure in server by decreasing the garbage collection time by up to 81\%; and 3) avoid about 90\% of spill tasks to reduce disk I/O.
+
+It has been shown that in-memory computing systems suffer from serious memory pressure. The memory pressure will affect all submitted jobs. Memory pressure comes from the running tasks as they produce massive long-living data objects in the limited memory space. The long-living objects incur significant memory and CPU overheads. Some tasks cause the heavy memory pressure because of the operations and dataset they process, which in turn affect all running tasks in the system. Our studies show that a task often call several API functions provided by the need to constant memory space, while some need the linear memory space. As different models have different impact on memory pressure, we propose a method of classifying the models that the tasks belong to. The method uses the memory usage rate as the classification criteria. Further, we design a scheduler called MURS to mitigate the memory pressure. We implement MURS in Spark and conduct the experiments to evaluate the performance of MURS. The results show that when comparing to Spark, our scheduler can 1) decrease the execution time of submitted jobs by up to 65.8\%, 2) mitigate the memory pressure in the server by decreasing the garbage collection time by up to 81\%, and 3) reduce the data spilling, and hence disk I/Os, by approximately 90\%.
 
 \end{abstract}
 
 \begin{IEEEkeywords}
-component; formatting; style; styling;
+memory pressure; memory usage rate; task scheduler; data processing systems for service
 
 \end{IEEEkeywords}
 
@@ -614,11 +567,10 @@ component; formatting; style; styling;
 
 
 % use section* for acknowledgement
-\section*{Acknowledgment}
+%\section*{Acknowledgment}
 
 
-The authors would like to thank...
-more thanks here
+%The authors would like to thank somebody and somebody. The work is provided by 
 
 
 % trigger a \newpage just before the given reference
@@ -653,8 +605,6 @@ more thanks here
 
 \bibliographystyle{IEEEtran}
 \bibliography{ref}
-
-
 
 
 % that's all folks
