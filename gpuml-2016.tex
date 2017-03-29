@@ -426,12 +426,12 @@ Email: \{first, second, haijin\}@hust.edu.cn}
 \begin{abstract}
 %In-memory computing systems are shown to suffer serious memory pressure as well as they are for service, the memory pressure will effect all submitted jobs. Memory pressure is coming from the running tasks as they produce massive long-lived data objects in limited memory, which brings significant memory and CPU overheads. Some tasks result in heavy memory pressure because of the operations and dataset they process, which affects all running tasks in the system. We find that each task includes several function APIs provided by the framework, and most function APIs produce long-lived data objects in memory within their own regular models; some need constant memory space while some need linear memory space. As different models have different impact on memory pressure, we propose memory usage rate to classify which model a task belongs to. Based on the memory usage rate, we design a scheduler called MURS to schedule all running tasks and mitigate heavy memory pressure. We implement MURS in Spark and the experimental study shows that, when compare to Spark, our scheduler can 1) decrease the execution time of submitted job by up to 65.8\%; 2) mitigate the memory pressure in server by decreasing the garbage collection time by up to 81\%; and 3) avoid about 90\% of spill tasks to reduce disk I/O.
 
-It has been shown that in-memory computing systems suffer from serious memory pressure. The memory pressure will affect all submitted jobs. Memory pressure comes from the running tasks as they produce massive long-living data objects in the limited memory space. The long-living objects incur significant memory and CPU overheads. Some tasks cause the heavy memory pressure because of the operations and dataset they process, which in turn affect all running tasks in the system. Our studies show that a task often call several API functions provided by the need to constant memory space, while some need the linear memory space. As different models have different impact on memory pressure, we propose a method of classifying the models that the tasks belong to. The method uses the memory usage rate as the classification criteria. Further, we design a scheduler called MURS to mitigate the memory pressure. We implement MURS in Spark and conduct the experiments to evaluate the performance of MURS. The results show that when comparing to Spark, our scheduler can 1) decrease the execution time of submitted jobs by up to 65.8\%, 2) mitigate the memory pressure in the server by decreasing the garbage collection time by up to 81\%, and 3) reduce the data spilling, and hence disk I/Os, by approximately 90\%.
+Good Good Study, Day Day Up. Wish!
 
 \end{abstract}
 
 \begin{IEEEkeywords}
-memory pressure; memory usage rate; task scheduler; data processing systems for service
+performance analysis; GPU architectures; decision tree; analytical model
 
 \end{IEEEkeywords}
 
@@ -447,8 +447,9 @@ memory pressure; memory usage rate; task scheduler; data processing systems for 
 \IEEEpeerreviewmaketitle
 
 \input{intro}
-\input{motivation}
+%\input{motivation}
 \input{related}
+\input{background}
 \input{decision}
 \input{model}
 \input{result}
