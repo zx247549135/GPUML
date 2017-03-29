@@ -1,35 +1,42 @@
 \section{Introduction}
 
-Background(一段) 
+Background (1 paragraph)
+
+% 1. GPU性能评估的重要性；
+% 2. GPU性能评估需要考虑的问题，准确性，指导性等等。
+Why we need to analysis the performance of GPU applications.
+
+Motivation (1 paragraph)
+
+% 1. 监控工具可以监控的指标有非常多种，需要熟练的技术知识才能分析这些指标；
+% 2. 指标太多不利于直接发现最关键的性能瓶颈，需要一定的经验知识作为辅导；
+% 3. 数学模型的建立有助于评估性能，但是精确的模型的建立及理解都很困难，对模型建立者和使用者都需要对GPU架构有深刻理解。
+There are some problems in the former works, thus we must propose our work.
+
+Introduction (2 paragraph) 
+
+% 监控工具得到的指标非常多，往往一个指标或者多个指标集可以指向一个具体的性能问题。而不同的GPU程序又必然有一个影响最大的性能瓶颈。所以能够快速定位影响最大的性能瓶颈非常关键。决策树的分析模型是机器学习中基于信息论的分类模型，更加专注于信息对整个数据集的影响，因此由决策树决定需要考虑的指标，非常适合解决该问题。
+
+Too metrics in the tools, how can we get the most important metrics. Decision tree is best to solve this problem.
+
+% 获取影响最大的指标集后，极大地缩小了需要考虑的范围。如果继续采用决策树的分类性能瓶颈和优化方案具有一定的误差，这与机器学习特性有关。传统的数学模型准确度往往比机器学习算法准确率要高，由于需要考虑的指标集已经很小了，因此通过理论模型分析这些指标更为恰当。分析方法从三个层面考虑：应用层面（包括应用在计算需求、数据排列上的处理），系统层面（包括指令调度、资源管理和分配等），硬件层面（包括通信带宽、资源特性等）。结合小范围的数据集和三个层面，本文模型可以快速定位并准确提出性能瓶颈与优化方案。
+
+Analytical model is more accurate than the machine learning model, thus we use analytical model to analysis the performance based on the result of decision tree.
+
+Contribution (3 points) 
+
+% 1. 提供了一种结合决策树模型和理论分析模型的GPU应用性能分析模型，可以更加准确地定位性能瓶颈并提出优化方案。
+% 2. 提供了一种基于决策树的分析算法，在GPU应用程序的监控数据中，由决策树决定影响最大的指标集并做进一步的理论分析。决策树的方法可以快速地决策GPU应用程序的瓶颈，缩小需要考虑和分析的范围。决策树不仅基于microbenchmark，还可以基于上层数据处理系统的benchmark训练，适用范围广。
+% 3. 基于决策树的分析结果，提出了面向应用、系统和硬件的三层理论分析模型，进一步定位决策树得出的瓶颈结果。理论分析模型可以在小范围内更加准确地确定GPU应用瓶颈并提出优化方法。
 
 \begin{itemize}
-\item 1. GPU性能评估的重要性；
-\item 2. GPU性能评估需要考虑的问题，准确性，指导性等等。
+
+\item We propose a performance analysis model based on decision tree.
+
+\item We propose a algorithm based on decision tree to classify these metrics and get the most important metrics.
+
+\item We propose a analytical model to analysis performance of GPU applications through a set of metrics.
+
 \end{itemize}
 
-Motivation（一段） 
-
-\begin{itemize}
-\item 1. 监控工具可以监控的指标有非常多种，需要熟练的技术知识才能分析这些指标；
-\item 2. 指标太多不利于直接发现最关键的性能瓶颈，
-需要一定的经验知识作为辅导；
-\item 3. 数学模型的建立有助于评估性能，但是精确的模型的建立及理解都很困难，对模型建立者和使用者都需要对GPU架构有深刻理解。
-\end{itemize}
-
-Introduction（两段） 
-
-监控工具得到的指标非常多，往往一个指标或者多个指标集可以指向一个具体的性能问题。而不同的GPU程序又必然有一个影响最大的性能瓶颈。所以能够快速定位影响最大的性能瓶颈非常关键。决策树的分析模型是机器学习中基于信息论的分类模型，更加专注于信息对整个数据集的影响，因此由决策树决定需要考虑的指标，非常适合解决该问题。
-
-获取影响最大的指标集后，极大地缩小了需要考虑的范围。如果继续采用决策树的分类性能瓶颈和优化方案具有一定的误差，这与机器学习特性有关。传统的数学模型准确度往往比机器学习算法准确率要高，由于需要考虑的指标集已经很小了，因此通过理论模型分析这些指标更为恰当。分析方法从三个层面考虑：应用层面（包括应用在计算需求、数据排列上的处理），系统层面（包括指令调度、资源管理和分配等），硬件层面（包括通信带宽、资源特性等）。结合小范围的数据集和三个层面，本文模型可以快速定位并准确提出性能瓶颈与优化方案。
-
-Contribution（三点） 
-
-\begin{itemize}
-\item 1. 提供了一种结合决策树模型和理论分析模型的GPU应用性能分析模型，可以更加准确地定位性能瓶颈并提出优化方案。
-\item 2. 提供了一种基于决策树的分析算法，在GPU应用程序的监控数据中，由决策树决定影响最大的指标集并做进一步的理论分析。决策树的方法可以快速地决策GPU应用程序的瓶颈，缩小需要考虑和分析的范围。决策树不仅基于microbenchmark，还可以基于上层数据处理系统的benchmark训练，适用范围广。
-\item 3. 基于决策树的分析结果，提出了面向应用、系统和硬件的三层理论分析模型，进一步定位决策树得出的瓶颈结果。理论分析模型可以在小范围内更加准确地确定GPU应用瓶颈并提出优化方法。
-\end{itemize}
-
-Paper（一段） 
-
-第II章，相关工作；第III章：背景；第IV章，决策树；第V章，分析模型；第VI章，实验；第VII章，结论。
+The rest of the paper is organized as follows. Section II discusses the related work. Section III introduces the background of our work. Section IV describes the decision tree in our performance model. Section V presents the analytical model for GPU architectures. Performance evaluation is carried out in Section VI. Finally, Section VII concludes this paper.
