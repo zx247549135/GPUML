@@ -18,24 +18,23 @@ Common examples of metrics (or features) used in this paper are shown in Table~\
 
 \begin{table}[!t]
 \small
-\centering
+%\lefting
 \caption{Common Examples of Metrics/Features in this paper} 
-\begin{tabular}{ c | c | c  }
+\begin{tabular}{ l | l | l }
 \hline
-Name & Metric Meaning & Feature Type
+\textbf{Name} & \textbf{Metric Meaning} & \textbf{Type} \\
 \hline
-Input_size & size of input dataset & SF\\
+\textit{Input\_size} & size of input dataset & SF\\
 \hline
-TLP & the degree of thread level parallelism & RF \\
+\textit{TLP} & the thread level parallelism & RF \\
  \hline
-ILP & the degree of instruction level parallelism & RF \\
+\textit{ILP} & the instruction level parallelism & RF \\
 \hline
-SFU_width & width of special function units per SM & RF \\
+\textit{SFU\_width} & width of special function units per SM & RF \\
 \hline
-Cache_hit & cache hit latency & RF \\
+\textit{Cache\_hit} & cache hit latency & RF \\
 \hline
-Sync_overhead & the overhead of waiting synchronization & AF \\
-\hline
+\textit{Sync\_over} & the overhead of waiting synchronization & AF \\
 \hline
 \end{tabular}
 %\vspace{-4mm}
@@ -51,7 +50,7 @@ One possible hypothesis space of this paper is shown in Figure~\ref{fig:hs}.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.4\textwidth]{hypothesisspace.pdf}
+\includegraphics[width=0.5\textwidth]{hypothesisspace.pdf}
 %\vspace{-2mm}
 \caption{An Example of Hypothesis Space}
 %\vspace{-4mm}

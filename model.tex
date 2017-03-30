@@ -86,39 +86,3 @@ MURS suspends the proposed heavy tasks to prevent memory pressure increasing at 
 Function \textit{ComputeSpill} is designed to avoid spilling. As the running tasks share the JVM heap together, the maximally allocated space for each task is ensured to less than $1/N$ while $N$ is the number of running threads. When the consumption exceeds the maximal space, the spill or out-of-memory error will occur. Running tasks that satisfy the \textit{ComputeSpill} (lines 27, 30) are also suspended to decrease the parallelism in order to acquire enough memory space after memory pressure goes away.   
 
 When a running task completes, we resume a suspended task popped from the queue accordingly. After the memory pressure recedes, meaning the usage of JVM heap is below the yellow value after a full GC, the remaining suspended tasks will also be removed. However, one completed task only resumes one suspended task and the memory usage below yellow value will remove all suspended tasks.
-
-\begin{comment}
-\subsection{Multi-launch with MURS}
-
-When light tasks have a large proportion in the running tasks, or memory space is enough for total running tasks, the memory pressure is light. Light memory pressure usually means that memory space will suffer less allocation and reclamation. However, properly increase the frequency of memory allocation and reclamation can improve the efficiency of memory usage. With hyper-threading technology, we can increase the parallelism of submitted jobs as well as memory pressure. Fortunately, MURS releases our scruple that memory pressure increases seriously with high parallelism. Thus, we propose multi-launch to improve the efficiency of memory usage with MURS.
-
-Multi-launch works when tasks are launched to workers. Multiple tasks are launched to workers compared to the original configuration. If the configuration has remained free CPUs in the workers, multi-launch will work better because an extra task can execute more quickly on a physical CPU than on a logic CPU. The multiple should not be too large, because 1) maximally accessible memory space in heap is limited; 2) the interprocessor communication time can not be ignored; 3) I/O parallelism is limited by disk.
-
-\end{comment}
-
-
-
-
-
-
-
-
-\begin{comment}
-\subsection{Balance of the Stop}
-
-When the heavy tasks are suspended, they will suffer from a long wait. A long wait will result in two problems: 1) CPU resource is waste during suspending tasks; and 2) stopped tasks can be stragglers. 
-
-Although the tasks with linear memory usage model will lead to more memory pressure, frequent stopping is not tolerated in these tasks. And it is a little regretful to waste CPUs when some tasks are suspended. Multi-launch is designed to enhance the fairness:
-
-\begin{enumerate}
-
-\item When tasks are allocated to workers, multiple tasks will be launched. This will result in memory pressure at express speed.
-
-\item After the mitigation of MURS, tasks with a constant or sub-linear memory usage rate will complete and memory pressure will recede. Thus, the tasks with a linear memory usage model will run smoothly with light memory pressure and more resources (both core and memory).
-
-\end{enumerate}
-
-However, multi-launch is not always advised. When the space of execution memory is much smaller or spill is accessed, multi-launch will affect the memory pressure to a great extent. Although our scheduler can prevent the increasing speed of memory pressure, much higher parallelism will decrease the available heap space of one task. Less max available space of one task will result in out of memory error.
-
-As we know, stragglers are common in current distributed data processing systems. Many reasons, such as the heterogeneous environment~\cite{matei:heter}, can lead to one task taking much more time than other tasks and affects the completion of a job. Our scheduler even stops some tasks to prevent the execution. In fact, if the heterogeneous environment is gotten rid of, the cost of computation itself is much more stable. However, garbage collections can prominently increase the execution time of tasks, especially in current in-memory data processing systems, as shown in Figure~\ref{fig:memorypressure}. Our scheduler can control heavy memory pressure, based on the memory usage rate. With low memory pressure, these tasks can be free from the stop-the-world of garbage collection by waiting for constant or sub-linear tasks, and fortunately, the constant or sub-linear tasks can execute quickly with less memory pressure. Thus, we take some time to wait, but free more pressures of garbage collection. 
-\end{comment}
