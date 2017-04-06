@@ -20,7 +20,7 @@
 %% Legal Notice:
 %% This code is offered as-is without any warranty either expressed or
 %% implied; without even the implied warranty of MERCHANTABILITY or
-%% FITNESS FOR A PARTICULAR PURPOSE! 
+%% FITNESS FOR A PARTICULAR PURPOSE!
 %% User assumes all risk.
 %% In no event shall IEEE or any contributor to this code be liable for
 %% any damages or losses, including, but not limited to, incidental,
@@ -147,7 +147,7 @@
 % graphicx was written by David Carlisle and Sebastian Rahtz. It is
 % required if you want graphics, photos, etc. graphicx.sty is already
 % installed on most LaTeX systems. The latest version and documentation can
-% be obtained at: 
+% be obtained at:
 % http://www.ctan.org/tex-archive/macros/latex/required/graphics/
 % Another good source of documentation is "Using Imported Graphics in
 % LaTeX2e" by Keith Reckdahl which can be found as epslatex.ps or
@@ -258,8 +258,8 @@
 \usepackage{multirow}
 \usepackage{balance}
 \usepackage{comment}
-\usepackage{tikz}
-\usepackage[numbers,sort&compress]{natbib}
+%\usepackage{tikz}
+%\usepackage[numbers,sort&compress]{natbib}
 
 \usepackage{color}
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -292,7 +292,7 @@
 % IEEEtran.cls handling of captions and this will result in nonIEEE style
 % figure/table captions. To prevent this problem, be sure and preload
 % caption.sty with its "caption=false" package option. This is will preserve
-% IEEEtran.cls handing of captions. Version 1.3 (2005/06/28) and later 
+% IEEEtran.cls handing of captions. Version 1.3 (2005/06/28) and later
 % (recommended due to many improvements over 1.2) of subfig.sty supports
 % the caption=false option directly:
 %\usepackage[caption=false,font=footnotesize]{subfig}
@@ -395,10 +395,10 @@ Email: \{first, second, haijin\}@hust.edu.cn}
 
 % for over three affiliations, or if they all won't fit within the width
 % of the page, use this alternative format:
-% 
+%
 %\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
 %Homer Simpson\IEEEauthorrefmark{2},
-%James Kirk\IEEEauthorrefmark{3}, 
+%James Kirk\IEEEauthorrefmark{3},
 %Montgomery Scott\IEEEauthorrefmark{3} and
 %Eldon Tyrell\IEEEauthorrefmark{4}}
 %\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Electrical and Computer Engineering\\
@@ -427,6 +427,7 @@ Email: \{first, second, haijin\}@hust.edu.cn}
 %In-memory computing systems are shown to suffer serious memory pressure as well as they are for service, the memory pressure will effect all submitted jobs. Memory pressure is coming from the running tasks as they produce massive long-lived data objects in limited memory, which brings significant memory and CPU overheads. Some tasks result in heavy memory pressure because of the operations and dataset they process, which affects all running tasks in the system. We find that each task includes several function APIs provided by the framework, and most function APIs produce long-lived data objects in memory within their own regular models; some need constant memory space while some need linear memory space. As different models have different impact on memory pressure, we propose memory usage rate to classify which model a task belongs to. Based on the memory usage rate, we design a scheduler called MURS to schedule all running tasks and mitigate heavy memory pressure. We implement MURS in Spark and the experimental study shows that, when compare to Spark, our scheduler can 1) decrease the execution time of submitted job by up to 65.8\%; 2) mitigate the memory pressure in server by decreasing the garbage collection time by up to 81\%; and 3) avoid about 90\% of spill tasks to reduce disk I/O.
 
 Good Good Study, Day Day Up. Wish!
+Come on!
 
 \end{abstract}
 
@@ -493,7 +494,7 @@ performance analysis; GPU architectures; decision tree; analytical model
 %\begin{figure}[!t]
 %\centering
 %\includegraphics[width=2.5in]{myfigure}
-% where an .eps filename suffix will be assumed under latex, 
+% where an .eps filename suffix will be assumed under latex,
 % and a .pdf suffix will be assumed for pdflatex; or what has been declared
 % via \DeclareGraphicsExtensions.
 %\caption{Simulation Results}
@@ -527,7 +528,7 @@ performance analysis; GPU architectures; decision tree; analytical model
 % reference/describe all of them (a), (b), etc., within the main caption.
 
 
-% An example of a floating table. Note that, for IEEE style tables, the 
+% An example of a floating table. Note that, for IEEE style tables, the
 % \caption command should come BEFORE the table. Table text will default to
 % \footnotesize as IEEE normally uses this smaller font for tables.
 % The \label must come after \caption as always.
@@ -571,7 +572,7 @@ performance analysis; GPU architectures; decision tree; analytical model
 %\section*{Acknowledgment}
 
 
-%The authors would like to thank somebody and somebody. The work is provided by 
+%The authors would like to thank somebody and somebody. The work is provided by
 
 
 % trigger a \newpage just before the given reference
