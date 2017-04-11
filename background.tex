@@ -3,7 +3,9 @@
 \subsection{Features in ML}
 
 % 特征工程是机器学习应用中重要的两个模块之一，特征用来评价一条记录的某个方面，特征的好坏决定了模型的准确性。
-% 机器学习对特征的要求是各个特征之间的关联性很小，尽量相互独立，能够反映数据的特点。例如，GPU应用的一条监控数据，包括三个特征：Kernal函数的程序长度Code_Line，编译后的Kernal函数指令条数Instruction_Line，SM配置的Block的维度Block_X，Code_Line和Instruction_Line有明显的决定关系，两者关联度很高，在一般情况下Code_Line和Instruction_Line成线性关系，作为两个特征并不合适，而Block_X和Instruction_Line之间没有直接关系，可以作为两个重要特征。
+% 机器学习对特征的要求是各个特征之间的依赖性很小，尽量相互独立，能够反映数据的特点。例如，GPU应用的一条监控数据，包括三个特征：Kernal函数的程序长度Code_Line，编译后的Kernal函数指令条数Instruction_Line，SM配置的Block的维度Block_X，Code_Line和Instruction_Line有明显的决定关系，两者关联度很高，在一般情况下Code_Line和Instruction_Line成线性关系，作为两个特征并不合适，而Block_X和Instruction_Line之间没有直接关系，可以作为两个重要特征。
+
+% 在计算要求较高的机器学习应用中，往往需要对特征做降维处理。降维处理是从特征体系中选择最为重要的特征，一般的降维算法有PCA、信息熵决策。决策方法通过信息理论熵计算出最重要的特征，即降维时需要选择的特征。
 
 Features in ML.
 
@@ -12,7 +14,7 @@ Features in ML.
 % 机器学习的训练模型中有两大类，基于线性拟合的模型（Regression Model)，如逻辑回归（Logistics Regression），神经网络（Neural Network），深度学习（Deep Learning）等；基于信息论的决策模型（Decision Model），如决策树（Decision Tree），随机森林（Random Forest）等。
 % 机器学习模型的训练本质上是对特征的处理：Regression Model通过多次迭代，更新模型中各项特征的权重矩阵，最终权重矩阵收敛到一个稳定值；Decision Model则通过多次划分，每次选择最优的特征来划分数据集，形成树形模型。
 
-% 在对新的数据做分类预测时，Regression Model直接利用权重矩阵与新数据的特征值矩阵相乘，预测新数据的类别，而Decision Model则按照树形模型依次考虑新数据的每个特征值所属类别。因此，Decision Model更适合于分析预测的过程，而且基于信息论的决策过程也可以保证科学性。
+% 在对新的数据做分类预测时，Regression Model直接利用权重矩阵与新数据的特征值矩阵相乘，预测新数据的类别，而Decision Model则按照树形模型依次考虑新数据的每个特征值所属类别。因此，Decision Model更适合于分析预测的过程，而且基于信息论的决策过程同样适用于特征降维，可以保证数据特征选取的科学性。
 % 在Decision Model上最基础的实现是Decision Tree，基于信息划分理论实现Decision Tree。在Decision Tree基础上发展的Random Forest则通过多颗树形成森林，然后对结果做综合预测，进一步提高机器学习模型的准确性。
 
 % 在GPU应用的监控数据中，我们需要考虑监控数据的重要性，首先需要做的是将监控的metric转变为Feature，形成一条记录。然后选择机器学习的模型来决定重要的Feature，很明显Decision Model更适合于中间过程的分析。由于机器学习模型极大的方便了用户，屏蔽了非常重要的技术分析细节，准确率往往比传统的数学模型要低。为了保证GPU应用分析的重要性，结合传统的数学分析模型更为重要。所以使用Decision Tree而不是Random Forest，对使用理论模型分析性能的情况更为高效。
