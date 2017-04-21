@@ -1,24 +1,38 @@
 \section{Related Work}
 
-Related works of this paper include these aspects:
+%Related works of this paper include these aspects:
 
 % 机器学习在GPU性能分析上的应用实例。完全用机器学习预测和分析IPDPS16、HPCA15；
 % 在AM模型上使用机器学习ICPE15。
 % 另外需要提一下ML在特征工程上的重要性工作。
 
-Machine Learning in GPU performance analysis~\cite{nguyen:yak}. 
+%Machine Learning in GPU performance analysis~\cite{nguyen:yak}. 
 
-Feature engineering in ML is also the basis of our work.
+%Feature engineering in ML is also the basis of our work.
 
 % 传统的性能分析模型的应用实例，通用模型方面，GPU架构HPCA11、应用本身的性能指标DATE16、应用的优化措施分析PPoPP12; 
 % 专用模型方面，稀疏矩阵CC15、程序并行性ICPPW12、程序中判断条件的性能CCPE13
 % 等。
 
-Analytical Model in GPU performance analysis is built on general cases or proprietary cases.
-General cases:
-architecture of GPU system. For example, work 1; work 2.
-optimization of GPU application. For example, work 3.
-runtime metrics of GPU applications. For example, work 4.
-Proprietary cases:
-SPMV; Parallelism; Conditions in instructions.
+%Analytical Model in GPU performance analysis is built on general cases or proprietary cases.
+%General cases:
+%architecture of GPU system. For example, work 1; work 2.
+%optimization of GPU application. For example, work 3.
+%runtime metrics of GPU applications. For example, work 4.
+%Proprietary cases:
+%SPMV; Parallelism; Conditions in instructions.
+
+There is plenty of work on performance evaluation of GPU application, including traditional performance analysis models(AM) and machine learning-based approaches(ML). AM can be classified into general models and specific models. General models are generally applicable to any GPU program or kernel, and provide a comprehensive assessments, while specific models are for specific GPU programs or provide assessment for part of GPU architecture.
+
+Zhang and Owens~\cite{Zhang2011A} propose a quantitative performance analysis model from the perspective of GPU architecture, in which they modele the execution time spent on the instruction pipeline, shared memory, and global memory, to find performance bottleneck of GPU application. Sim et al.~\cite{Sim2012A} present an analysis model from the perspective of application optimization methods. They classify the methods into four aspects and put forward four potential benefit metrics: B$_{itilp}$, B$_{memlp}$, B$_{fp}$, B$_{serial}$, to guide application performance optimization. Bombieri et al.~\cite{Bombieri2016A} propose a fine-grained performance model based on the performance metrics of GPU application, such as synchronization, thread divergence, load balancing, L1/L2, shared memory efficiency. The model rely on micro-benchmarks and several optimization criteria to estimate the potential performance of the application.
+
+As for specific models, some researches are on specific GPU application. Guo and Wang~\cite{Guo2015Accurate} propose an analytical approach to predict the kernel execution time of sparse matrix-vector multiplications. Su et al.~\cite{Su2015An} present a performance analysis model for 3D stencil calculations based on the data transfer at different stages of the GPU memory hierarchy. Some researches focuses on one kind of GPU applications, for example, an analytic model that focuses on memory-bound applications is discribed in~\cite{Ma2012A}. Models for only one aspect of GPU also exist. Konstantinidis and Cotronis~\cite{Konstantinidis2016A} describe a performance evaluation for measuring the memory bandwidth of fast on-chip memories of GPU.
+
+Traditional performance analysis models, although accurate, often require a detailed understanding of the hardware architecture, and they often rely on simulators or profiling tools to collect information, which is time-consuming. More and more researches use machine learning approaches to carry out performance evaluation.
+
+Wu et al.~\cite{Wu2015GPGPU} describe a GPU performance and power estimation model, using machine learning method to explore the design space for different hardware configurations, and use the performance values in one configuration to predict performance and power in other configurations. Madougou et al.~\cite{Madougou2016A} present a statistical method for performance analysis based on hardware performance counters, using random forest algorithms combined with PCA (principal component analysis) and regression methods to identify performance bottlenecks and predict performance of GPU applications.
+
+Performance evaluation based on machine learning is simple and easy to use, but its accuracy can not be guaranteed since it strongly depends on the training data sets, and feature selection is also very important. Didona et al.~\cite{Didona2015Enhancing} combine traditional analysis model with machine learning method, taking AM as an individual, and compares it with ML-based modeling to improve the robustness of performance prediction. But this method is not for GPU applications.
+
+In our work, we combine machine learning approach with analysis model to conduct the performance evaluation. The process is divided into two stages. In the first stage, machine learning method is used to train and obtain the most influential features on GPU application execution time, and the features are sorted based on the degree of the influence. In the second stage we use the analysis model to analyze these features and identify the performance bottleneck.
 
